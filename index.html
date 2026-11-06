@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WeatherTrip Project Gantt Chart & Schedule Dashboard</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        personA: '#3b82f6', // Shangkary (Blue)
+                        personB: '#22c55e', // Dimas (Green)
+                        personC: '#a855f7', // Mellisah (Purple)
+                        team: '#eab308',    // Whole Team (Yellow/Gold)
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen p-4 sm:p-6 lg:p-8">
+
+    <div class="max-w-7xl mx-auto space-y-8">
+        
+        <!-- Header & Title Block -->
+        <header class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                    <div class="flex items-center space-x-2">
+                        <span class="px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-sky-700 bg-sky-50 rounded-md border border-sky-200">
+                            AWS CendekiAwan Project
+                        </span>
+                        <span class="text-xs text-slate-400">8-Week Timeline Plan</span>
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-2">
+                        WeatherTrip Project Gantt Chart & Task Schedule
+                    </h1>
+                    <p class="text-slate-500 text-sm mt-1">
+                        Weather-aware smart tourism app (Next.js Web, Expo Mobile & Supabase Backend Architecture)
+                    </p>
+                </div>
+
+                <!-- Quick Stats Badge -->
+                <div class="flex items-center space-x-3 bg-slate-50 p-3 rounded-xl border border-slate-100">
+                    <div class="text-center px-3 border-r border-slate-200">
+                        <span class="block text-xs text-slate-400 font-medium">Tasks</span>
+                        <span id="stat-total" class="text-lg font-bold text-slate-700">18</span>
+                    </div>
+                    <div class="text-center px-3 border-r border-slate-200">
+                        <span class="block text-xs text-slate-400 font-medium">Completed</span>
+                        <span id="stat-completed" class="text-lg font-bold text-emerald-600">0</span>
+                    </div>
+                    <div class="text-center px-3">
+                        <span class="block text-xs text-slate-400 font-medium">In Progress</span>
+                        <span id="stat-in-progress" class="text-lg font-bold text-amber-600">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Team Roles Bar -->
+            <div class="mt-6 pt-6 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div class="flex items-center space-x-3 p-3 bg-blue-50/60 rounded-xl border border-blue-100">
+                    <div class="w-3.5 h-3.5 rounded-full bg-blue-500 flex-shrink-0"></div>
+                    <div>
+                        <div class="text-xs font-semibold text-blue-900">Shangkary (Person A)</div>
+                        <div class="text-xs text-blue-700">Web Lead (Next.js & Weather API)</div>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3 p-3 bg-emerald-50/60 rounded-xl border border-emerald-100">
+                    <div class="w-3.5 h-3.5 rounded-full bg-emerald-500 flex-shrink-0"></div>
+                    <div>
+                        <div class="text-xs font-semibold text-emerald-900">Dimas (Person B)</div>
+                        <div class="text-xs text-emerald-700">Mobile Lead (Expo & Native)</div>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3 p-3 bg-purple-50/60 rounded-xl border border-purple-100">
+                    <div class="w-3.5 h-3.5 rounded-full bg-purple-500 flex-shrink-0"></div>
+                    <div>
+                        <div class="text-xs font-semibold text-purple-900">Mellisah (Person C)</div>
+                        <div class="text-xs text-purple-700">Backend & Core Lead (Supabase & AI)</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Filter Controls -->
+        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200/80 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Filter By:</span>
+                
+                <!-- Lead Filter Buttons -->
+                <div class="inline-flex rounded-lg bg-slate-100 p-1 space-x-1 text-xs font-medium text-slate-600">
+                    <button onclick="filterLead('ALL')" id="filter-lead-ALL" class="px-3 py-1.5 rounded-md bg-white shadow-xs text-slate-900 font-semibold transition">All Team</button>
+                    <button onclick="filterLead('Shangkary')" id="filter-lead-Shangkary" class="px-3 py-1.5 rounded-md hover:text-slate-900 transition">Shangkary</button>
+                    <button onclick="filterLead('Dimas')" id="filter-lead-Dimas" class="px-3 py-1.5 rounded-md hover:text-slate-900 transition">Dimas</button>
+                    <button onclick="filterLead('Mellisah')" id="filter-lead-Mellisah" class="px-3 py-1.5 rounded-md hover:text-slate-900 transition">Mellisah</button>
+                </div>
+
+                <!-- Status Filter Dropdown -->
+                <select id="status-filter" onchange="filterStatus(this.value)" class="text-xs bg-slate-100 border-none font-medium text-slate-700 rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-sky-500">
+                    <option value="ALL">All Statuses</option>
+                    <option value="Not Started">Not Started</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Completed">Completed</option>
+                </select>
+            </div>
+
+            <div class="text-xs text-slate-400 self-end sm:self-center">
+                Showing <span id="visible-count" class="font-bold text-slate-700">18</span> of 18 tasks
+            </div>
+        </div>
+
+        <!-- Visual Gantt Timeline Section -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
+            <div class="p-4 sm:p-6 border-b border-slate-100 flex items-center justify-between">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-900">Visual Gantt Chart Timeline</h2>
+                    <p class="text-xs text-slate-500">Horizontal bar representation across the 8-week build schedule</p>
+                </div>
+                <div class="flex items-center space-x-3 text-xs font-medium">
+                    <span class="flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block mr-1"></span> Shangkary</span>
+                    <span class="flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block mr-1"></span> Dimas</span>
+                    <span class="flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-purple-500 inline-block mr-1"></span> Mellisah</span>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <div class="min-w-[800px] p-6 space-y-4">
+                    <!-- Week Header Column Grid -->
+                    <div class="grid grid-cols-12 gap-2 text-xs font-bold text-slate-400 border-b border-slate-200 pb-2">
+                        <div class="col-span-4">Task / Phase</div>
+                        <div class="col-span-8 grid grid-cols-8 text-center">
+                            <span>W1</span><span>W2</span><span>W3</span><span>W4</span><span>W5</span><span>W6</span><span>W7</span><span>W8</span>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Gantt Bars Container -->
+                    <div id="gantt-bars-container" class="space-y-3">
+                        <!-- Rendered dynamically by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Task Table -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
+            <div class="p-4 sm:p-6 border-b border-slate-100">
+                <h2 class="text-lg font-bold text-slate-900">Task Schedule & Deliverables</h2>
+                <p class="text-xs text-slate-500">Edit status dropdowns directly to track progress in real-time</p>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs sm:text-sm">
+                    <thead class="bg-slate-50 text-slate-500 uppercase tracking-wider text-[11px] font-semibold border-b border-slate-200">
+                        <tr>
+                            <th class="py-3.5 px-4 w-28">Phase</th>
+                            <th class="py-3.5 px-4">Task Name</th>
+                            <th class="py-3.5 px-4 w-44">Lead Responsible</th>
+                            <th class="py-3.5 px-4">Deliverables & Milestones</th>
+                            <th class="py-3.5 px-4 w-36">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="task-table-body" class="divide-y divide-slate-100 font-normal text-slate-700">
+                        <!-- Rendered dynamically by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Individual Ownership Cards Section -->
+        <div class="space-y-4">
+            <h2 class="text-xl font-bold text-slate-900">Individual Ownership Breakdown</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                
+                <!-- Person A Card -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 relative overflow-hidden flex flex-col justify-between">
+                    <div class="absolute top-0 left-0 right-0 h-1.5 bg-blue-500"></div>
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-bold text-blue-600 uppercase tracking-wider">Person A</span>
+                            <span class="px-2 py-0.5 text-[11px] font-medium bg-blue-50 text-blue-700 rounded-md">Directory: apps/web/</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-slate-900">Shangkary</h3>
+                        <p class="text-xs font-semibold text-slate-500 mb-4">Web Lead (Next.js & Weather API)</p>
+                        <ul class="space-y-2 text-xs text-slate-600">
+                            <li class="flex items-start">
+                                <svg class="w-3.5 h-3.5 text-blue-500 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                <span>Next.js app setup, responsive layouts, 5 primary views</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-3.5 h-3.5 text-blue-500 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                <span>Open-Meteo weather wrapper (15-min caching, hourly rain, KL timezone)</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-3.5 h-3.5 text-blue-500 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                <span>Leaflet / MapLibre map integration with configurable tile provider</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-3.5 h-3.5 text-blue-500 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                <span>Web AI Assistant streaming chat panel & prompt suggestion chips</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-3.5 h-3.5 text-blue-500 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                <span>SEO, OpenGraph tags, privacy pages, and Vercel production launch</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Person B Card -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 relative overflow-hidden flex flex-col justify-between">
+                    <div class="absolute top-0 left-0 right-0 h-1.5 bg-emerald-500"></div>
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider">Person B</span>
+                            <span class="px-2 py-0.5 text-[11px] font-medium bg-emerald-50 text-emerald-700 rounded-md">Directory: apps/mobile/</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-slate-900">Dimas</h3>
+                        <p class="text-xs font-semibold text-slate-500 mb-4">Mobile Lead (Expo & Native)</p>
+                        <ul class="space-y-2 text-xs text-slate-600">
+                            <li class="flex items-start">
+                                <svg class="w-3.5 h-3.5 text-emerald-500 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                <span>Expo React Native app with Expo Router & NativeWind</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-3.5 h-3.5 text-emerald-500 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                <span>Native location permission handling & plain-language privacy prompts</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-3.5 h-3.5 text-emerald-500 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                <span>Mobile maps with clustering, route lines & native date/time pickers</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-3.5 h-3.5 text-emerald-500 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                <span>Mobile AI Chat bottom sheet with keyboard avoidance & offline fallback</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-3.5 h-3.5 text-emerald-500 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                <span>Push notification tokens, offline caching, and EAS store builds</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Person C Card -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 relative overflow-hidden flex flex-col justify-between">
+                    <div class="absolute top-0 left-0 right-0 h-1.5 bg-purple-500"></div>
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-bold text-purple-600 uppercase tracking-wider">Person C</span>
+                            <span class="px-2 py-0.5 text-[11px] font-medium bg-purple-50 text-purple-700 rounded-md">packages/*, supabase/</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-slate-900">Mellisah</h3>
+                        <p class="text-xs font-semibold text-slate-500 mb-4">Backend & Core Lead (Supabase & AI)</p>
+                        <ul class="space-y-2 text-xs text-slate-600">
+                            <li class="flex items-start">
+                                <svg class="w-3.5 h-3.5 text-purple-500 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                <span>Monorepo config, branch rules, Zod schemas & MYR currency types</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-3.5 h-3.5 text-purple-500 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                <span>Suitability engine (0-100 score) with Vitest TDD & rain rerouting logic</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-3.5 h-3.5 text-purple-500 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                <span>Curate 30–50 Johor SME attractions JSON data with hand-verified indoor tags</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-3.5 h-3.5 text-purple-500 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                <span>Supabase DB, RLS policies, Auth, and scheduled Push notification rechecks</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-3.5 h-3.5 text-purple-500 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                <span>Supabase LLM Edge Function (`explain`), prompt grounding & canned demo mode</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- JavaScript Data & Logic -->
+    <script>
+        const tasksData = [
+            // Week 1
+            { id: 1, phase: 'Week 1', phaseSub: 'Architecture', name: 'Monorepo Setup & Branch Rules', lead: 'Mellisah', startWeek: 1, durationWeeks: 1, deliverables: 'Turborepo, pnpm setup, GitHub branch protection, ESLint/Prettier configs.', status: 'Completed' },
+            { id: 2, phase: 'Week 1', phaseSub: 'Architecture', name: 'Shared Types & Config Definition', lead: 'Mellisah', startWeek: 1, durationWeeks: 1, deliverables: 'Core TypeScript interfaces (Attraction, Forecast, Itinerary, Category, MYR standards).', status: 'Completed' },
+            { id: 3, phase: 'Week 1', phaseSub: 'Architecture', name: 'Web App Layout & UI Mockups', lead: 'Shangkary', startWeek: 1, durationWeeks: 1, deliverables: 'Next.js setup, base navigation, 5 primary screens with mock data.', status: 'Completed' },
+            { id: 4, phase: 'Week 1', phaseSub: 'Architecture', name: 'Mobile App Navigation & UI Mockups', lead: 'Dimas', startWeek: 1, durationWeeks: 1, deliverables: 'Expo Router setup, NativeWind styling, bottom tab bar with 5 mock screens.', status: 'Completed' },
+            
+            // Weeks 2-3
+            { id: 5, phase: 'Weeks 2–3', phaseSub: 'Core Integration', name: 'Suitability Scoring Engine (TDD)', lead: 'Mellisah', startWeek: 2, durationWeeks: 2, deliverables: 'Vitest unit tests, 0–100 scoring algorithm (rain, temp, wind, time penalties).', status: 'Completed' },
+            { id: 6, phase: 'Weeks 2–3', phaseSub: 'Core Integration', name: 'Data Curation & Seeding', lead: 'Mellisah', startWeek: 2, durationWeeks: 2, deliverables: 'Hand-curated JSON dataset of 30–50 Johor attractions (indoor/outdoor, MYR prices).', status: 'Completed' },
+            { id: 7, phase: 'Weeks 2–3', phaseSub: 'Core Integration', name: 'Weather API Integration & Caching', lead: 'Shangkary', startWeek: 2, durationWeeks: 2, deliverables: 'Open-Meteo wrapper, server-side 15-min caching, hourly rain, KL timezone.', status: 'In Progress' },
+            { id: 8, phase: 'Weeks 2–3', phaseSub: 'Core Integration', name: 'Mobile Native Permissions & Location', lead: 'Dimas', startWeek: 2, durationWeeks: 2, deliverables: 'Device location permissions, plain-language privacy prompts, store declaration prep.', status: 'In Progress' },
+
+            // Weeks 4-5
+            { id: 9, phase: 'Weeks 4–5', phaseSub: 'DB & AI Level 1', name: 'Supabase DB, Auth & RLS', lead: 'Mellisah', startWeek: 4, durationWeeks: 2, deliverables: 'Tables (profiles, attractions, saved_places, itineraries), RLS, email/Google Auth.', status: 'Not Started' },
+            { id: 10, phase: 'Weeks 4–5', phaseSub: 'DB & AI Level 1', name: 'Deterministic Itinerary Planner', lead: 'Mellisah', startWeek: 4, durationWeeks: 2, deliverables: 'Budget/pace/interest filters, slot evaluation, automatic rain rerouting to indoor SMEs.', status: 'Not Started' },
+            { id: 11, phase: 'Weeks 4–5', phaseSub: 'DB & AI Level 1', name: 'AI Explanation Edge Function (L1)', lead: 'Mellisah', startWeek: 4, durationWeeks: 2, deliverables: 'Supabase explain function, LLM prompt grounding (Gemini/Claude API), key isolation.', status: 'Not Started' },
+            { id: 12, phase: 'Weeks 4–5', phaseSub: 'DB & AI Level 1', name: 'Web Planner & Interactive Map UI', lead: 'Shangkary', startWeek: 4, durationWeeks: 2, deliverables: 'Zod forms, color-coded timeline, MapLibre/Leaflet map with OSM tile config.', status: 'Not Started' },
+            { id: 13, phase: 'Weeks 4–5', phaseSub: 'DB & AI Level 1', name: 'Mobile Map & Interactive Planner UI', lead: 'Dimas', startWeek: 4, durationWeeks: 2, deliverables: 'Native maps with clustering, route lines, FlatList timeline rendering, date pickers.', status: 'Not Started' },
+
+            // Weeks 6-7
+            { id: 14, phase: 'Weeks 6–7', phaseSub: 'AI Streaming & Legal', name: 'Streaming AI Chat Backend (L2)', lead: 'Mellisah', startWeek: 6, durationWeeks: 2, deliverables: 'Real-time response streaming, per-user rate limits, token length capping.', status: 'Not Started' },
+            { id: 15, phase: 'Weeks 6–7', phaseSub: 'AI Streaming & Legal', name: 'Automated Push Notifications', lead: 'Mellisah', startWeek: 6, durationWeeks: 2, deliverables: 'Scheduled background forecast rechecks via Expo Push API for major weather changes.', status: 'Not Started' },
+            { id: 16, phase: 'Weeks 6–7', phaseSub: 'AI Streaming & Legal', name: 'Web AI Assistant Chat & Legal Pages', lead: 'Shangkary', startWeek: 6, durationWeeks: 2, deliverables: 'Streaming chat panel with prompt chips, privacy policy, terms of service, SEO/OG tags.', status: 'Not Started' },
+            { id: 17, phase: 'Weeks 6–7', phaseSub: 'AI Streaming & Legal', name: 'Mobile AI Chat UI & Offline Support', lead: 'Dimas', startWeek: 6, durationWeeks: 2, deliverables: 'Chat bottom sheet with keyboard avoidance, local offline caching for saved itineraries.', status: 'Not Started' },
+
+            // Week 8
+            { id: 18, phase: 'Week 8', phaseSub: 'Polish & Launch', name: 'Demo Mode, Deploy & Rehearsal', lead: 'Whole Team', startWeek: 8, durationWeeks: 1, deliverables: 'Backend canned fallbacks, Vercel web deploy, EAS mobile build, Wi-Fi off rehearsal.', status: 'Not Started' }
+        ];
+
+        let currentLeadFilter = 'ALL';
+        let currentStatusFilter = 'ALL';
+
+        function getLeadBadgeClass(lead) {
+            switch(lead) {
+                case 'Shangkary': return 'bg-blue-50 text-blue-700 border-blue-200';
+                case 'Dimas': return 'bg-emerald-50 text-emerald-700 border-emerald-200';
+                case 'Mellisah': return 'bg-purple-50 text-purple-700 border-purple-200';
+                default: return 'bg-amber-50 text-amber-700 border-amber-200';
+            }
+        }
+
+        function getLeadBarColor(lead) {
+            switch(lead) {
+                case 'Shangkary': return 'bg-blue-500';
+                case 'Dimas': return 'bg-emerald-500';
+                case 'Mellisah': return 'bg-purple-500';
+                default: return 'bg-amber-500';
+            }
+        }
+
+        function renderDashboard() {
+            const filtered = tasksData.filter(t => {
+                const matchLead = currentLeadFilter === 'ALL' || t.lead === currentLeadFilter;
+                const matchStatus = currentStatusFilter === 'ALL' || t.status === currentStatusFilter;
+                return matchLead && matchStatus;
+            });
+
+            // Update Counts
+            document.getElementById('visible-count').innerText = filtered.length;
+            document.getElementById('stat-total').innerText = tasksData.length;
+            document.getElementById('stat-completed').innerText = tasksData.filter(t => t.status === 'Completed').length;
+            document.getElementById('stat-in-progress').innerText = tasksData.filter(t => t.status === 'In Progress').length;
+
+            // Render Gantt Bars
+            const ganttContainer = document.getElementById('gantt-bars-container');
+            ganttContainer.innerHTML = '';
+            
+            filtered.forEach(t => {
+                const row = document.createElement('div');
+                row.className = 'grid grid-cols-12 gap-2 items-center text-xs py-1.5 hover:bg-slate-50/80 rounded-lg transition px-1';
+                
+                // Left Column: Task Name & Lead
+                const infoCol = document.createElement('div');
+                infoCol.className = 'col-span-4 pr-2 truncate flex items-center space-x-2';
+                infoCol.innerHTML = `
+                    <span class="w-2 h-2 rounded-full ${getLeadBarColor(t.lead)} flex-shrink-0"></span>
+                    <span class="font-medium text-slate-800 truncate" title="${t.name}">${t.name}</span>
+                `;
+
+                // Right Column: 8 Week Timeline Grid
+                const timelineCol = document.createElement('div');
+                timelineCol.className = 'col-span-8 grid grid-cols-8 gap-1 h-6 items-center relative';
+
+                // Calculate start and span (Week 1 = index 0)
+                const startCol = t.startWeek;
+                const spanCols = t.durationWeeks;
+                const barColor = getLeadBarColor(t.lead);
+                
+                // Render bar segment
+                const bar = document.createElement('div');
+                bar.style.gridColumn = `${startCol} / span ${spanCols}`;
+                bar.className = `${barColor} text-white font-semibold text-[10px] px-2 py-1 rounded-md shadow-2xs truncate flex items-center justify-between opacity-90 hover:opacity-100 transition`;
+                bar.innerHTML = `<span>${t.lead}</span> <span class="opacity-75 text-[9px]">${t.status}</span>`;
+
+                timelineCol.appendChild(bar);
+                row.appendChild(infoCol);
+                row.appendChild(timelineCol);
+                ganttContainer.appendChild(row);
+            });
+
+            // Render Task Table
+            const tableBody = document.getElementById('task-table-body');
+            tableBody.innerHTML = '';
+
+            filtered.forEach(t => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50/80 transition';
+                
+                tr.innerHTML = `
+                    <td class="py-3.5 px-4 font-semibold text-slate-900 whitespace-nowrap">
+                        ${t.phase}
+                        <span class="block text-[11px] font-normal text-slate-400">${t.phaseSub}</span>
+                    </td>
+                    <td class="py-3.5 px-4 font-medium text-slate-800">${t.name}</td>
+                    <td class="py-3.5 px-4 whitespace-nowrap">
+                        <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold border ${getLeadBadgeClass(t.lead)}">
+                            ${t.lead}
+                        </span>
+                    </td>
+                    <td class="py-3.5 px-4 text-slate-600 max-w-xs sm:max-w-md">${t.deliverables}</td>
+                    <td class="py-3.5 px-4 whitespace-nowrap">
+                        <select onchange="updateTaskStatus(${t.id}, this.value)" class="text-xs font-semibold rounded-lg px-2.5 py-1.5 border border-slate-200 outline-none focus:ring-2 focus:ring-sky-500 ${getStatusBg(t.status)}">
+                            <option value="Not Started" ${t.status === 'Not Started' ? 'selected' : ''}>Not Started</option>
+                            <option value="In Progress" ${t.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+                            <option value="Completed" ${t.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                        </select>
+                    </td>
+                `;
+                tableBody.appendChild(tr);
+            });
+        }
+
+        function getStatusBg(status) {
+            switch(status) {
+                case 'Completed': return 'bg-emerald-50 text-emerald-700 border-emerald-200';
+                case 'In Progress': return 'bg-amber-50 text-amber-700 border-amber-200';
+                default: return 'bg-slate-100 text-slate-600';
+            }
+        }
+
+        function updateTaskStatus(taskId, newStatus) {
+            const task = tasksData.find(t => t.id === taskId);
+            if (task) {
+                task.status = newStatus;
+                renderDashboard();
+            }
+        }
+
+        function filterLead(lead) {
+            currentLeadFilter = lead;
+            ['ALL', 'Shangkary', 'Dimas', 'Mellisah'].forEach(l => {
+                const btn = document.getElementById(`filter-lead-${l}`);
+                if (l === lead) {
+                    btn.className = 'px-3 py-1.5 rounded-md bg-white shadow-xs text-slate-900 font-semibold transition';
+                } else {
+                    btn.className = 'px-3 py-1.5 rounded-md hover:text-slate-900 transition';
+                }
+            });
+            renderDashboard();
+        }
+
+        function filterStatus(status) {
+            currentStatusFilter = status;
+            renderDashboard();
+        }
+
+        // Initialize on load
+        window.onload = function() {
+            renderDashboard();
+        };
+    </script>
+</body>
+</html>
